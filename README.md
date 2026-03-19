@@ -55,10 +55,20 @@ Field of Endeavor: AI-Driven Digital Systems for Healthcare and Supply Chain Res
 
 ## Features
 
-- HIPAA-aligned controls
-- AI policy enforcement engine
-- Risk management framework
-- Audit logging model
-- Secure LLM pipeline examples
+- Compliance-by-design architecture  
+- HIPAA-aligned controls  
+- AI policy enforcement engine  
+- Risk management framework  
+- Audit logging model  
+- Secure LLM pipeline examples  
+- API for compliance validation  
 
-  uvicorn tooling.api:app --reload
+---
+
+## 🚀 Getting Started
+
+### 1. Clone repository
+
+```bash
+git clone https://github.com/BehaBB/healthcare-ai-compliance-framework.git
+cd healthcare-ai-compliance-framework
