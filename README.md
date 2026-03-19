@@ -52,3 +52,11 @@ performed by the framework itself.
 
 Senior Business & Systems Analyst | AI Systems Architect  
 Field of Endeavor: AI-Driven Digital Systems for Healthcare and Supply Chain Resilience
+
+## Features
+
+- HIPAA-aligned controls
+- AI policy enforcement engine
+- Risk management framework
+- Audit logging model
+- Secure LLM pipeline examples
