@@ -1,0 +1,7 @@
+rules:
+  - name: no_phi
+    type: keyword_block
+    keywords:
+      - SSN
+      - passport
+      - credit_card
