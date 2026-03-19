@@ -109,15 +109,15 @@ The framework includes a lightweight compliance engine that:
 
 ### 🔐 Compliance Design Principles
 
-Least privilege access
+● Least privilege access
 
-Human-in-the-loop decision making
+● Human-in-the-loop decision making
 
-Auditability by default
+● Auditability by default
 
-Policy enforcement before execution
+● Policy enforcement before execution
 
-Data minimization and protection
+● Data minimization and protection
 
 ### ⚠️ Disclaimer
 
@@ -126,8 +126,8 @@ implementation.
 
 It does not:
 
-represent a certified medical device
+● represent a certified medical device
 
-provide clinical decision-making
+● provide clinical decision-making
 
-replace regulatory or legal compliance processes
+● replace regulatory or legal compliance processes
