@@ -72,19 +72,21 @@ Field of Endeavor: AI-Driven Digital Systems for Healthcare and Supply Chain Res
 ```bash
 git clone https://github.com/BehaBB/healthcare-ai-compliance-framework.git
 cd healthcare-ai-compliance-framework
-
+```
 ### 2. Create virtual environment (recommended)
 ```bash
 python -m venv venv
 source venv/bin/activate      # Mac/Linux
 venv\Scripts\activate         # Windows
-
+```
 ### 3. Install dependencies
+```bash
 pip install -r requirements.txt
-
+```
 ### 4. Run Compliance API
+```bash
 uvicorn tooling.api:app --reload
-
+```
 ### 5. Open API documentation
 http://127.0.0.1:8000/docs
 
