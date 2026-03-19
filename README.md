@@ -60,3 +60,5 @@ Field of Endeavor: AI-Driven Digital Systems for Healthcare and Supply Chain Res
 - Risk management framework
 - Audit logging model
 - Secure LLM pipeline examples
+
+  uvicorn tooling.api:app --reload
