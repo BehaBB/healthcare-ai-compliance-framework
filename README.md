@@ -99,13 +99,13 @@ curl -X POST "http://127.0.0.1:8000/process" \
 
 The framework includes a lightweight compliance engine that:
 
-Validates incoming data against policy rules
+1. Validates incoming data against policy rules
 
-Blocks sensitive or non-compliant inputs (e.g. PHI)
+2. Blocks sensitive or non-compliant inputs (e.g. PHI)
 
-Logs actions for auditability
+3. Logs actions for auditability
 
-Enables controlled interaction with AI systems
+4. Enables controlled interaction with AI systems
 
 ### 🔐 Compliance Design Principles
 
