@@ -72,3 +72,60 @@ Field of Endeavor: AI-Driven Digital Systems for Healthcare and Supply Chain Res
 ```bash
 git clone https://github.com/BehaBB/healthcare-ai-compliance-framework.git
 cd healthcare-ai-compliance-framework
+
+### 2. Create virtual environment (recommended)
+```bash
+python -m venv venv
+source venv/bin/activate      # Mac/Linux
+venv\Scripts\activate         # Windows
+
+### 3. Install dependencies
+pip install -r requirements.txt
+
+### 4. Run Compliance API
+uvicorn tooling.api:app --reload
+
+### 5. Open API documentation
+http://127.0.0.1:8000/docs
+
+### 🧪 Example Request
+curl -X POST "http://127.0.0.1:8000/process" \
+-H "Content-Type: application/json" \
+-d '{"input_text": "Hello world"}'
+
+### ⚙️ How It Works
+
+The framework includes a lightweight compliance engine that:
+
+Validates incoming data against policy rules
+
+Blocks sensitive or non-compliant inputs (e.g. PHI)
+
+Logs actions for auditability
+
+Enables controlled interaction with AI systems
+
+### 🔐 Compliance Design Principles
+
+Least privilege access
+
+Human-in-the-loop decision making
+
+Auditability by default
+
+Policy enforcement before execution
+
+Data minimization and protection
+
+### ⚠️ Disclaimer
+
+This repository is intended as a reference framework and prototype
+implementation.
+
+It does not:
+
+represent a certified medical device
+
+provide clinical decision-making
+
+replace regulatory or legal compliance processes
