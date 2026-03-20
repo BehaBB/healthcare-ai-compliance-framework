@@ -1,16 +1,22 @@
-class PolicyEngine:
-    def __init__(self):
-        self.rules = []
+import re
 
-    def add_rule(self, rule):
-        self.rules.append(rule)
-
-    def validate(self, request):
-        for rule in self.rules:
-            if not rule(request):
-                raise Exception("Policy violation")
+def no_phi_rule(text: str) -> bool:
+    if not text:
         return True
 
+    patterns = [
+        r"\bssn\b",
+        r"\b\d{3}-\d{2}-\d{4}\b",  # SSN формат
+        r"\bmedical record\b",
+        r"\bpatient\b",
+        r"\b\d{3}-\d{3}-\d{4}\b",  # phone
+        r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b",  # email
+    ]
 
-def no_phi_rule(data):
-    return "SSN" not in data
+    text_lower = text.lower()
+
+    for pattern in patterns:
+        if re.search(pattern, text_lower):
+            return False
+
+    return True
