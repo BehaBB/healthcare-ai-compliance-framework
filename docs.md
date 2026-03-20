@@ -1,7 +1,7 @@
 
 ---
 
-# 📄 `docs.md` (очень важно — это entry point)
+# 📄 `docs.md` (entry point)
 
 ```md
 # Documentation Index
