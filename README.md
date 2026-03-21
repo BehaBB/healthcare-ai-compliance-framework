@@ -1,5 +1,7 @@
 # AI Compliance-by-Design Framework for Healthcare Systems
-
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Python](https://img.shields.io/badge/python-3.9+-blue)
 ## Overview
 
 This repository documents a compliance-by-design framework for AI-driven
