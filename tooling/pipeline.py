@@ -1,26 +1,26 @@
-from tooling.policy_engine import evaluate_policies
+from tooling.policy_loader import YAMLPolicyEngine
 from tooling.audit import log_event
+
+engine = YAMLPolicyEngine("tooling/policies.yaml")
 
 
 def process_request(user_id: str, text: str):
 
     log_event(user_id, "request_received")
 
-    # 1. применяем policies
-    decision = evaluate_policies(text)
-
-    # 2. блокировка
-    if decision.get("block"):
-        log_event(user_id, "request_blocked")
-        return {
-            "status": "blocked",
-            "reason": decision.get("reason", "policy_violation")
-        }
-
-    # 3. allow
-    log_event(user_id, "request_allowed")
-
-    return {
-        "status": "ok",
-        "output": text
+    decision = {
+        "decision": "ALLOW",
+        "violations": []
     }
+
+    try:
+        engine.validate(text)
+
+    except Exception as e:
+        decision["decision"] = "BLOCK"
+        decision["violations"].append(str(e))
+
+    # 🔥 audit ВСЕГДА после решения
+    log_event(user_id, f"decision:{decision['decision']}")
+
+    return decision
