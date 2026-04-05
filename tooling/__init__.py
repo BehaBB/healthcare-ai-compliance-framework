@@ -1,7 +1,10 @@
 # tooling/__init__.py
-# Делаем tooling Python-пакетом
+# Минимальная версия, чтобы проект запустился
+
 from .policy_loader import YAMLPolicyEngine
-from .policy_engine import PolicyEngine
 from .audit import AuditLogger
 
-__all__ = ['YAMLPolicyEngine', 'PolicyEngine', 'AuditLogger']
+# policy_engine содержит только функцию, поэтому импортируем её напрямую
+from .policy_engine import no_phi_rule
+
+__all__ = ["YAMLPolicyEngine", "AuditLogger", "no_phi_rule"]
