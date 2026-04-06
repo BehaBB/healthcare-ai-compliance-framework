@@ -188,3 +188,126 @@ def debug_endpoint(request: ProcessRequest):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
+# tooling/api.py — добавляем после существующего кода
+
+# ========== НОВЫЙ МОДУЛЬ 1: Расширенное логирование для Audit ==========
+import uuid
+from datetime import datetime
+from pathlib import Path
+
+# Создаём папку для audit логов
+AUDIT_LOG_DIR = Path(__file__).parent.parent / "audit_logs"
+AUDIT_LOG_DIR.mkdir(exist_ok=True)
+
+def write_audit_log(trace_id: str, request_text: str, response: dict, risk_level: str):
+    """Запись в immutable audit log (JSON Lines формат)"""
+    audit_entry = {
+        "trace_id": trace_id,
+        "timestamp": datetime.utcnow().isoformat(),
+        "request_text": request_text[:500],  # ограничиваем длину
+        "response": response,
+        "risk_level": risk_level,
+        "compliant": response.get("compliant")
+    }
+    log_file = AUDIT_LOG_DIR / f"{datetime.utcnow().date()}.jsonl"
+    with open(log_file, "a") as f:
+        f.write(json.dumps(audit_entry) + "\n")
+    return trace_id
+
+# ========== НОВЫЙ МОДУЛЬ 2: Risk Scoring (FDA + HIPAA) ==========
+def calculate_fda_risk_score(text: str, has_phi: bool, has_recommendations: bool) -> dict:
+    """
+    Рассчитывает риск по шкале FDA для медицинских AI (SaMD)
+    Возвращает: risk_score (0-100), fda_category (I, II, III)
+    """
+    risk_score = 0
+    reasons = []
+    
+    # PHI увеличивает риск
+    if has_phi:
+        risk_score += 30
+        reasons.append("PHI present (+30)")
+    
+    # Прямые медицинские рекомендации
+    if has_recommendations:
+        risk_score += 50
+        reasons.append("Medical recommendation (+50)")
+    
+    # Дополнительные факторы
+    if re.search(r'\b(diagnosis|treat|cure|prevent)\b', text, re.IGNORECASE):
+        risk_score += 20
+        reasons.append("Clinical decision support (+20)")
+    
+    if re.search(r'\b(emergency|severe|critical|life-threatening)\b', text, re.IGNORECASE):
+        risk_score += 40
+        reasons.append("Emergency/critical content (+40)")
+    
+    # Определяем категорию FDA
+    if risk_score >= 70:
+        fda_category = "III (High Risk)"
+    elif risk_score >= 40:
+        fda_category = "II (Moderate Risk)"
+    else:
+        fda_category = "I (Low Risk)"
+    
+    return {
+        "risk_score": min(risk_score, 100),
+        "fda_category": fda_category,
+        "factors": reasons,
+        "requires_validation": risk_score >= 50
+    }
+
+# ========== ОБНОВЛЯЕМ check_compliance с новыми фичами ==========
+def check_compliance_enhanced(text: str) -> Dict[str, Any]:
+    """
+    Улучшенная версия с FDA risk scoring и audit trail
+    """
+    # Существующие проверки
+    has_phi, phi_reasons = detect_phi_advanced(text)
+    has_recommendations, rec_reasons = detect_medical_recommendations(text)
+    
+    # Новая: FDA Risk Score
+    fda_risk = calculate_fda_risk_score(text, has_phi, has_recommendations)
+    
+    # Новая: Trace ID для audit
+    trace_id = str(uuid.uuid4())[:8]
+    
+    # Определяем итоговый статус
+    if has_recommendations or fda_risk["risk_score"] >= 70:
+        result = {
+            "compliant": False,
+            "risk_level": "high",
+            "blocked_phi": has_phi,
+            "reasons": phi_reasons + rec_reasons + ["FDA HIGH RISK: Requires physician review"],
+            "processed_text": f"[REQUIRES REVIEW - TRACE:{trace_id}] {text[:200]}...",
+            "fda_risk_score": fda_risk["risk_score"],
+            "fda_category": fda_risk["fda_category"],
+            "trace_id": trace_id
+        }
+    elif has_phi:
+        result = {
+            "compliant": False,
+            "risk_level": "medium",
+            "blocked_phi": True,
+            "reasons": phi_reasons + ["PHI detected - needs redaction"],
+            "processed_text": re.sub(r'\b[A-Z][a-z]+ [A-Z][a-z]+\b', '[NAME]', text),
+            "fda_risk_score": fda_risk["risk_score"],
+            "fda_category": fda_risk["fda_category"],
+            "trace_id": trace_id
+        }
+    else:
+        result = {
+            "compliant": True,
+            "risk_level": "low",
+            "blocked_phi": False,
+            "reasons": ["Compliant: No PHI or high-risk content"],
+            "processed_text": text,
+            "fda_risk_score": fda_risk["risk_score"],
+            "fda_category": fda_risk["fda_category"],
+            "trace_id": trace_id
+        }
+    
+    # Записываем в audit log
+    write_audit_log(trace_id, text, result, result["risk_level"])
+    
+    return result
