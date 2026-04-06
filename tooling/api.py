@@ -42,48 +42,64 @@ def process_input(request: ProcessRequest):
     trace_id = str(uuid.uuid4())[:8]
 
     try:
-        # Используем профессиональный Presidio детектор
+        # PROFESSIONAL PHI DETECTION WITH PRESIDIO
         phi_result = phi_detector.detect_phi(text)
         has_phi = phi_result["phi_found"]
         phi_entities = [e["entity_type"] for e in phi_result["entities"]]
 
-        # Анонимизация текста
+        # Анонимизация
         redacted_text, anon_info = phi_detector.anonymize_text(text)
 
-        risk_level = phi_result["risk_level"]
+        # === УЛУЧШЕННАЯ ЛОГИКА ОЦЕНКИ РИСКА ===
+        critical_phi = ["PERSON", "US_SSN", "PHONE_NUMBER", "EMAIL_ADDRESS"]
+        sensitive_phi = ["DATE_TIME", "LOCATION"]
 
-        if has_phi:
-            result = {
-                "compliant": False,
-                "risk_level": risk_level,
-                "blocked_phi": True,
-                "reasons": [f"PHI detected: {', '.join(phi_entities)}"],
-                "processed_text": redacted_text,
-                "phi_detected_entities": phi_entities,
-                "trace_id": trace_id
-            }
+        critical_count = sum(1 for e in phi_entities if e in critical_phi)
+        sensitive_count = sum(1 for e in phi_entities if e in sensitive_phi)
+        medical_count = len([e for e in phi_entities if e == "MEDICAL_TERM"])
+
+        if critical_count >= 1:
+            risk_level = "high"
+            reasons = [f"High risk: Critical PHI detected ({', '.join([e for e in phi_entities if e in critical_phi])})"]
+        elif critical_count == 0 and sensitive_count >= 2:
+            risk_level = "high"
+            reasons = ["High risk: Multiple sensitive PHI elements (name + date/location)"]
+        elif sensitive_count >= 1 or medical_count >= 3:
+            risk_level = "medium"
+            reasons = [f"Medium risk: PHI detected ({', '.join(phi_entities)})"]
         else:
-            result = {
-                "compliant": True,
-                "risk_level": "low",
-                "blocked_phi": False,
-                "reasons": ["No PHI detected"],
-                "processed_text": text,
-                "phi_detected_entities": [],
-                "trace_id": trace_id
-            }
+            risk_level = "low"
+            reasons = ["Compliant: No significant Protected Health Information detected"]
 
-        logger.info(f"Trace {trace_id}: Processed with risk_level={risk_level}, PHI={has_phi}")
+        compliant = risk_level == "low"
+
+        result = {
+            "compliant": compliant,
+            "risk_level": risk_level,
+            "blocked_phi": has_phi,
+            "reasons": reasons,
+            "processed_text": redacted_text if has_phi else text,
+            "phi_detected_entities": phi_entities,
+            "trace_id": trace_id,
+            "anonymization_info": {
+                "entities_redacted": len(phi_entities),
+                "original_text_length": len(text),
+                "redacted_text_length": len(redacted_text)
+            }
+        }
+
+        logger.info(f"Trace {trace_id} | Risk: {risk_level} | PHI: {has_phi} | Entities: {phi_entities}")
+        
         return result
 
     except Exception as e:
-        logger.error(f"Error processing request {trace_id}: {str(e)}")
+        logger.error(f"Error processing trace {trace_id}: {str(e)}")
         return {
             "compliant": False,
             "risk_level": "high",
             "blocked_phi": False,
-            "reasons": ["Internal error during PHI detection"],
-            "processed_text": "[ERROR]",
+            "reasons": ["Internal error during PHI analysis. Please try again."],
+            "processed_text": "[PROCESSING ERROR]",
             "phi_detected_entities": [],
             "trace_id": trace_id
         }
