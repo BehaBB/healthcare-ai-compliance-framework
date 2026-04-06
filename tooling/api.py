@@ -5,6 +5,9 @@ import uuid
 import logging
 from pathlib import Path
 import sys
+import json
+from datetime import datetime
+from pathlib import Path
 
 # Добавляем путь, чтобы можно было импортировать из tooling
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -89,8 +92,17 @@ def process_input(request: ProcessRequest):
         }
 
         logger.info(f"Trace {trace_id} | Risk: {risk_level} | PHI: {has_phi} | Entities: {phi_entities}")
+                # Записываем аудит
+        write_audit_log(
+            trace_id=trace_id,
+            original_text=text,
+            result=result,
+            risk_level=risk_level,
+            phi_entities=phi_entities
+        )
         
         return result
+        
 
     except Exception as e:
         logger.error(f"Error processing trace {trace_id}: {str(e)}")
@@ -103,6 +115,37 @@ def process_input(request: ProcessRequest):
             "phi_detected_entities": [],
             "trace_id": trace_id
         }
+
+        # ==================== AUDIT LOGGING ====================
+def write_audit_log(trace_id: str, original_text: str, result: dict, risk_level: str, phi_entities: list):
+    """Сохраняет полный аудит каждой обработки запроса"""
+    try:
+        log_entry = {
+            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "trace_id": trace_id,
+            "risk_level": risk_level,
+            "blocked_phi": result.get("blocked_phi", False),
+            "phi_detected_entities": phi_entities,
+            "original_text_length": len(original_text),
+            "processed_text_length": len(result.get("processed_text", "")),
+            "reasons": result.get("reasons", []),
+            "anonymization_info": result.get("anonymization_info", {})
+        }
+
+        # Создаём папку, если её нет
+        log_dir = Path("audit_logs")
+        log_dir.mkdir(exist_ok=True)
+
+        # Сохраняем в отдельный файл по trace_id
+        log_file = log_dir / f"audit_{trace_id}.json"
+        
+        with open(log_file, "w", encoding="utf-8") as f:
+            json.dump(log_entry, f, indent=2, ensure_ascii=False)
+
+        logger.info(f"Audit log saved: audit_{trace_id}.json")
+        
+    except Exception as e:
+        logger.error(f"Failed to write audit log for trace {trace_id}: {str(e)}")
 
 if __name__ == "__main__":
     import uvicorn
