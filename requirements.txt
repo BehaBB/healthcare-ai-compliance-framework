@@ -1,4 +1,14 @@
 fastapi
-uvicorn
-pyyaml
+uvicorn[standard]
 pydantic
+python-multipart
+
+# Microsoft Presidio для профессионального PHI detection
+presidio-analyzer
+presidio-anonymizer
+spacy
+en_core_web_lg
+
+# Дополнительно (полезно для healthcare)
+pyyaml
+python-dotenv
