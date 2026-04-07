@@ -1,42 +1,43 @@
 # Healthcare AI Compliance Framework
 
-**Compliance-by-Design для безопасной работы LLM в здравоохранении**
+**Compliance-by-Design for Safe LLM Operations in Healthcare**
 
-Встройте HIPAA-совместимые guardrails, защиту PHI и полную аудиторию прямо в архитектуру.  
-Никаких утечек, штрафов и «а что если регулятор спросит?» — только готовые к продакшену AI-пайплайны.
+Embed HIPAA-compliant guardrails, PHI protection, and complete auditability directly into your architecture.  
+No leaks, no fines, no "what if regulators ask?" — only production-ready AI pipelines.
 
 ---
 
 ## The Problem
 
-В здравоохранении **85 % AI-проектов проваливаются** из-за слабой архитектуры и отсутствия реального production-кейса.
+In healthcare, **85% of AI projects fail** due to poor architecture and lack of real production use cases.
 
-Результат:
-- Утечки PHI → многомиллионные штрафы
-- Невозможность аудита → потеря доверия регуляторов
-- Постфактум-фиксы → потеря скорости и денег
+The result:
+- PHI leaks → multi-million dollar fines
+- No auditability → loss of regulator trust
+- Post-hoc fixes → lost speed and money
 
-Вы уже сделали сильную архитектуру.  
-Осталось главное — **показать, как это работает в реальной клинике**.
+You've already built a strong architecture.  
+Now the main thing is to **show how it works in a real clinical setting**.
 
 ---
 
 ## The Solution
 
-Лёгкий, готовый к продакшену **compliance engine**, который становится guardrail-слоем перед любым LLM или AI-агентом.
+A lightweight, production-ready **compliance engine** that becomes a guardrail layer in front of any LLM or AI agent.
 
-### Главный use case: Safe LLM for Clinical Notes
+### Main Use Case: Safe LLM for Clinical Notes
 
-Врач диктует заметки → фреймворк автоматически фильтрует PHI → LLM обрабатывает только безопасный текст → валидация вывода → полный аудит.
+Doctor dictates notes → framework automatically filters PHI → LLM processes only safe text → output validation → complete audit.
 
 **Pipeline:**
 
 ```mermaid
 graph LR
-    A[Doctor Input<br/>Клинические заметки] --> B[Compliance Filter<br/>PHI Detection (Presidio)]
+    A[Doctor Input<br/>Clinical Notes] --> B[Compliance Filter<br/>PHI Detection (Presidio)]
     B --> C[Decision Engine<br/>Policy + Risk Score]
     C -->|BLOCK| D[Reject / Redact<br/>+ Alert]
     C -->|ALLOW| E[LLM Processing]
     E --> F[Output Validation]
     F --> G[Audit Log + Traceability]
     G --> H[Safe Output to EHR / Doctor]
+```
