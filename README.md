@@ -96,3 +96,9 @@ Bashcurl -X POST http://127.0.0.1:8000/process \
   -H "Content-Type: application/json" \
   -d '{"input_text": "Patient SSN is 123-45-6789"}'
 ```
+###  ⚠️ Borderline Case
+```bash
+curl -X POST http://127.0.0.1:8000/process \
+  -H "Content-Type: application/json" \
+  -d '{"input_text": "The patient is a 45-year-old male with hypertension. Contact Dr. Smith at 555-0123 for follow-up."}'
+```
