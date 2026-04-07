@@ -39,7 +39,7 @@ curl -X POST https://your-api.com/process \
 ```
 **Response:**
 
-json
+```json
 {
   "decision": "BLOCK",
   "risk_level": "critical",
@@ -52,9 +52,10 @@ json
   "requires_human": false,
   "trace_id": "a1b2c3d4"
 }
-Result: PHI is detected and blocked BEFORE reaching the LLM. Medical recommendation flagged for review. Complete audit log for compliance.
+```
+**Result:** PHI is detected and blocked BEFORE reaching the LLM. Medical recommendation flagged for review. Complete audit log for compliance.
 
-🎮 Live Demo
+### 🎮 Live Demo
 Test Case 1: ✅ Safe Medical Question
 bash
 curl -X POST https://opulent-acorn-wjj79x6x47r29pxv-8000.app.github.dev/process \
