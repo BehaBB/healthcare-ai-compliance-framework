@@ -11,6 +11,7 @@ from enum import Enum
 import concurrent.futures
 import threading
 from collections import defaultdict
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -67,6 +68,25 @@ class Violation:
 
 
 @dataclass
+class DecisionTrace:
+    """Полный трейс принятия решения"""
+    step: str
+    timestamp: str
+    input_data: Dict[str, Any]
+    output_data: Dict[str, Any]
+    duration_ms: float
+    
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "step": self.step,
+            "timestamp": self.timestamp,
+            "input_data": self.input_data,
+            "output_data": self.output_data,
+            "duration_ms": self.duration_ms
+        }
+
+
+@dataclass
 class EvaluationResult:
     decision: str
     risk_level: str
@@ -80,6 +100,8 @@ class EvaluationResult:
     masked_text: str = ""
     engine_version: str = ENGINE_VERSION
     processing_time_ms: float = 0.0
+    decision_trace: List[Dict[str, Any]] = field(default_factory=list)
+    policy_hash: str = ""
 
 
 # Thread-safe audit logger
@@ -127,6 +149,16 @@ class ComplianceDecisionEngine:
         self.phi_detector = None
         self.audit_logger = AuditLogger()
         self._session_counter = defaultdict(int)
+        
+        # Инициализация PolicyManager
+        try:
+            from core.policies import PolicyManager
+            self.policy_manager = PolicyManager()
+            logger.info("PolicyManager initialized")
+        except Exception as e:
+            logger.warning(f"PolicyManager not available: {e}")
+            self.policy_manager = None
+        
         self._init_components()
     
     def _init_components(self):
@@ -152,45 +184,91 @@ class ComplianceDecisionEngine:
         return f"anon_{uuid.uuid4().hex[:8]}"
     
     def evaluate(self, text: str, user_id: Optional[str] = None) -> EvaluationResult:
-        import time
+        """Главная точка входа для оценки запроса"""
         start_time = time.time()
+        traces = []
         
         trace_id = str(uuid.uuid4())[:8]
         session_id = self._get_session_id(user_id)
         violations: List[Violation] = []
         
-        # 1. Llama Guard check with timeout
+        # ========== 1. LLAMA GUARD CHECK ==========
+        trace_start = time.time()
         guard_result = self._check_llama_guard_safe(text)
+        traces.append(DecisionTrace(
+            step="llama_guard",
+            timestamp=datetime.utcnow().isoformat(),
+            input_data={"text_preview": text[:100]},
+            output_data={"safe": not guard_result.get("violations"), "violations_count": len(guard_result.get("violations", []))},
+            duration_ms=(time.time() - trace_start) * 1000
+        ))
         if guard_result.get("violations"):
             violations.extend(guard_result["violations"])
         
-        # 2. PHI detection with timeout
+        # ========== 2. PHI DETECTION ==========
+        trace_start = time.time()
         phi_result = self._check_phi_safe(text)
+        traces.append(DecisionTrace(
+            step="phi_detection",
+            timestamp=datetime.utcnow().isoformat(),
+            input_data={"text_preview": text[:100]},
+            output_data={"phi_found": len(phi_result.get("violations", [])) > 0},
+            duration_ms=(time.time() - trace_start) * 1000
+        ))
         if phi_result.get("violations"):
             violations.extend(phi_result["violations"])
         
-        # 3. Medical recommendations
+        # ========== 3. MEDICAL RECOMMENDATIONS ==========
+        trace_start = time.time()
         medical_result = self._check_medical_recommendations(text)
+        traces.append(DecisionTrace(
+            step="medical_check",
+            timestamp=datetime.utcnow().isoformat(),
+            input_data={"text_preview": text[:100]},
+            output_data={"has_recommendation": len(medical_result.get("violations", [])) > 0},
+            duration_ms=(time.time() - trace_start) * 1000
+        ))
         if medical_result.get("violations"):
             violations.extend(medical_result["violations"])
         
-        # 4. Calculate risk score (hybrid: max + count bonus)
+        # ========== 4. RISK CALCULATION ==========
+        trace_start = time.time()
         risk_score = self._calculate_risk_score_hybrid(violations)
+        traces.append(DecisionTrace(
+            step="risk_calculation",
+            timestamp=datetime.utcnow().isoformat(),
+            input_data={"violations_count": len(violations), "violation_types": [v.type for v in violations]},
+            output_data={"risk_score": risk_score},
+            duration_ms=(time.time() - trace_start) * 1000
+        ))
         
-        # 5. Mask PHI (always)
+        # ========== 5. MASK PHI ==========
         masked_text = self._mask_phi(text)
         
-        # 6. Make decision
-        decision, risk_level, requires_human = self._make_decision(
+        # ========== 6. MAKE DECISION (с учётом политик) ==========
+        trace_start = time.time()
+        decision, risk_level, requires_human = self._make_decision_with_policies(
             violations=violations,
             risk_score=risk_score
         )
+        traces.append(DecisionTrace(
+            step="final_decision",
+            timestamp=datetime.utcnow().isoformat(),
+            input_data={"risk_score": risk_score, "violations_count": len(violations)},
+            output_data={"decision": decision, "risk_level": risk_level, "requires_human": requires_human},
+            duration_ms=(time.time() - trace_start) * 1000
+        ))
         
-        # 7. Explainability
+        # ========== 7. EXPLAINABILITY ==========
         explanation = self._generate_explanation(decision, risk_score, violations)
         reasoning = self._generate_reasoning(decision, violations)
         
         processing_time_ms = (time.time() - start_time) * 1000
+        
+        # Получаем policy hash
+        policy_hash = ""
+        if self.policy_manager:
+            policy_hash = self.policy_manager.get_policy_hash()
         
         result = EvaluationResult(
             decision=decision,
@@ -204,12 +282,47 @@ class ComplianceDecisionEngine:
             requires_human=requires_human,
             masked_text=masked_text,
             engine_version=ENGINE_VERSION,
-            processing_time_ms=round(processing_time_ms, 2)
+            processing_time_ms=round(processing_time_ms, 2),
+            decision_trace=[t.to_dict() for t in traces],
+            policy_hash=policy_hash
         )
         
         self._audit_log(trace_id, session_id, user_id, text, result)
         
         return result
+    
+    def _make_decision_with_policies(self, violations: List[Violation], risk_score: int) -> Tuple[str, str, bool]:
+        """Принимает решение на основе политик и risk_score"""
+        
+        # 1. Проверяем политики
+        if self.policy_manager:
+            enabled_policies = self.policy_manager.get_enabled_policies()
+            
+            for policy in enabled_policies:
+                for rule in policy.rules:
+                    for v in violations:
+                        if v.type == rule.type:
+                            if rule.action == "block":
+                                return "BLOCK", policy.severity.value, False
+                            elif rule.action == "require_human_review":
+                                return "REVIEW", policy.severity.value, True
+                            elif rule.action == "redact":
+                                # redact уже сделан в masking
+                                pass
+        
+        # 2. Fallback на risk_score если политики не сработали
+        has_critical = any(v.severity == Severity.CRITICAL.value for v in violations)
+        
+        if has_critical:
+            return "BLOCK", "critical", False
+        elif risk_score >= RISK_THRESHOLDS["critical"]:
+            return "BLOCK", "critical", False
+        elif risk_score >= RISK_THRESHOLDS["high"]:
+            return "BLOCK", "high", False
+        elif risk_score >= RISK_THRESHOLDS["medium"]:
+            return "REVIEW", "medium", True
+        else:
+            return "ALLOW", "low", False
     
     def _check_llama_guard_safe(self, text: str) -> Dict[str, Any]:
         """Safe Llama Guard check with timeout (no asyncio)"""
@@ -340,20 +453,6 @@ class ComplianceDecisionEngine:
         
         return masked
     
-    def _make_decision(self, violations: List[Violation], risk_score: int) -> Tuple[str, str, bool]:
-        has_critical = any(v.severity == Severity.CRITICAL.value for v in violations)
-        
-        if has_critical:
-            return "BLOCK", "critical", False
-        elif risk_score >= RISK_THRESHOLDS["critical"]:
-            return "BLOCK", "critical", False
-        elif risk_score >= RISK_THRESHOLDS["high"]:
-            return "BLOCK", "high", False
-        elif risk_score >= RISK_THRESHOLDS["medium"]:
-            return "REVIEW", "medium", True
-        else:
-            return "ALLOW", "low", False
-    
     def _generate_explanation(self, decision: str, risk_score: int, violations: List[Violation]) -> str:
         if not violations:
             return f"✅ Risk: {risk_score}/100. Decision: {decision}."
@@ -395,7 +494,38 @@ class ComplianceDecisionEngine:
             "requires_human": result.requires_human,
             "masked_text": result.masked_text[:1000],
             "engine_version": result.engine_version,
-            "processing_time_ms": result.processing_time_ms
+            "processing_time_ms": result.processing_time_ms,
+            "policy_hash": result.policy_hash,
+            "decision_trace": result.decision_trace
         }
         self.audit_logger.log(log_entry)
         logger.info(f"Audit | {trace_id} | {session_id} | {result.decision} | {result.risk_score}")
+    
+    # ==================== POLICY MANAGEMENT API ====================
+    
+    def get_policies(self):
+        """Возвращает все политики"""
+        if self.policy_manager:
+            return {
+                "policies": [p.to_dict() for p in self.policy_manager.get_all_policies()],
+                "policy_hash": self.policy_manager.get_policy_hash(),
+                "count": len(self.policy_manager.policies)
+            }
+        return {"error": "PolicyManager not available"}
+    
+    def get_policy(self, policy_id: str):
+        """Возвращает конкретную политику"""
+        if self.policy_manager:
+            return self.policy_manager.get_policy(policy_id)
+        return None
+    
+    def reload_policies(self):
+        """Hot-reload политик"""
+        if self.policy_manager:
+            self.policy_manager.reload_policies()
+            return {
+                "status": "reloaded",
+                "policy_hash": self.policy_manager.get_policy_hash(),
+                "policies_count": len(self.policy_manager.policies)
+            }
+        return {"error": "PolicyManager not available"}

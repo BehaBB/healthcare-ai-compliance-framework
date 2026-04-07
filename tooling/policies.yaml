@@ -1,7 +1,60 @@
+# Создаём папку
+mkdir -p policies
+
+# Создаём файл с политикой PHI
+cat > policies/POL-001_PHI_Protection_Policy.yaml << 'EOF'
+id: POL-001
+name: PHI Protection Policy
+version: 2.0.0
+description: Strict protection of Protected Health Information (HIPAA)
+severity: high
+enabled: true
+category: phi
 rules:
-  - name: no_phi
-    type: keyword_block
-    keywords:
-      - SSN
-      - passport
-      - credit_card
+  - type: phi_detection
+    action: redact
+    parameters:
+      entities: [PERSON, DATE, LOCATION, MEDICAL_RECORD]
+    description: Redact common PHI entities
+  - type: phi_detection
+    action: block
+    parameters:
+      entities: [US_SSN, DRIVER_LICENSE, EMAIL]
+    description: Block highly sensitive identifiers
+EOF
+
+# Создаём файл с политикой безопасности
+cat > policies/POL-002_Content_Safety_Policy.yaml << 'EOF'
+id: POL-002
+name: Content Safety Policy
+version: 2.0.0
+description: Blocks unsafe content and jailbreak attempts
+severity: critical
+enabled: true
+category: safety
+rules:
+  - type: llama_guard
+    action: block
+    parameters:
+      categories: [jailbreak, violence, self_harm, sexual]
+    description: Block unsafe content
+EOF
+
+# Создаём файл с политикой медицинских рекомендаций
+cat > policies/POL-003_Medical_Advice_Policy.yaml << 'EOF'
+id: POL-003
+name: Medical Advice Compliance Policy
+version: 2.0.0
+description: Prevents unauthorized clinical recommendations
+severity: high
+enabled: true
+category: medical
+rules:
+  - type: medical_recommendation
+    action: require_human_review
+    parameters:
+      keywords: [recommend, prescribe, treat, dosage, metformin, insulin]
+      confidence_threshold: 0.75
+      disclaimer_required: true
+    description: Drug recommendations require human review
+EOF
