@@ -124,6 +124,7 @@ curl -X POST https://opulent-acorn-wjj79x6x47r29pxv-8000.app.github.dev/process 
 │  │                    Response (with trace_id)                          │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 └─────────────────────────────────────────────────────────────────────────────┘
+
 ### 📊 Decision Flow
 
 ┌──────────────────┐
@@ -166,13 +167,26 @@ Compliance Officer	Review audit logs, configure policies
 Security Team	Monitor for attack patterns
 
 ### 🔐 Compliance Standards
-Standard	      Implementation
-HIPAA	PHI       detection + redaction + audit logs
-FDA SaMD	      Risk scoring (I/II/III categories)
-EU AI Act      	Risk tiers (minimal → unacceptable)
-NIST AI         RMF	Govern → Map → Measure → Manage
+
+| Standard | Implementation | Status |
+|----------|----------------|--------|
+| **HIPAA** | PHI detection + redaction + audit logs (JSONL) | ✅ Fully implemented |
+| **FDA SaMD** | Risk scoring (Class I, II, III based on risk score: 0-40/40-70/70-100) | ✅ Implemented |
+| **EU AI Act** | Risk tiers (minimal → limited → high → unacceptable) | ✅ Mapped to risk_score |
+| **NIST AI RMF** | Govern → Map → Measure → Manage lifecycle | ✅ Embedded in decision engine |
+| **GDPR** | Right to explanation (trace_id + reasoning), data minimization | ✅ Implemented |
+
+### 📊 Risk Score to Compliance Mapping
+
+| Risk Score | FDA Class | EU AI Act | Action |
+|------------|-----------|-----------|--------|
+| 0-40 | Class I (Low) | Minimal/Limited | ALLOW |
+| 40-70 | Class II (Moderate) | High | REVIEW |
+| 70-100 | Class III (High) | Unacceptable | BLOCK |
+
 ### 🚀 Quick Start
 bash
+
 # Clone
 git clone https://github.com/BehaBB/healthcare-ai-compliance-framework.git
 cd healthcare-ai-compliance-framework
@@ -186,6 +200,7 @@ python -m uvicorn tooling.api:app --reload --host 0.0.0.0 --port 8000
 
 # Test
 curl http://localhost:8000/health
+
 ### 📈 Why This Matters
 ● 85% of healthcare AI projects fail due to poor compliance architecture
 
