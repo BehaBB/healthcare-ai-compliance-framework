@@ -166,11 +166,11 @@ Compliance Officer	Review audit logs, configure policies
 Security Team	Monitor for attack patterns
 
 ### 🔐 Compliance Standards
-Standard	Implementation
-HIPAA	PHI detection + redaction + audit logs
-FDA SaMD	Risk scoring (I/II/III categories)
-EU AI Act	Risk tiers (minimal → unacceptable)
-NIST AI RMF	Govern → Map → Measure → Manage
+Standard	      Implementation
+HIPAA	PHI       detection + redaction + audit logs
+FDA SaMD	      Risk scoring (I/II/III categories)
+EU AI Act      	Risk tiers (minimal → unacceptable)
+NIST AI         RMF	Govern → Map → Measure → Manage
 ### 🚀 Quick Start
 bash
 # Clone
@@ -187,27 +187,27 @@ python -m uvicorn tooling.api:app --reload --host 0.0.0.0 --port 8000
 # Test
 curl http://localhost:8000/health
 ### 📈 Why This Matters
-85% of healthcare AI projects fail due to poor compliance architecture
+● 85% of healthcare AI projects fail due to poor compliance architecture
 
-HIPAA fines range from $100 to $50,000 per violation
+● HIPAA fines range from $100 to $50,000 per violation
 
-No audit trail = impossible to prove safety to regulators
+● No audit trail = impossible to prove safety to regulators
 
 This framework solves all three problems with production-ready code.
 
 ### 🎯 Roadmap
-PHI Detection (Presidio)
+● PHI Detection (Presidio)
 
-Safety Guardrails (Llama Guard 3)
+● Safety Guardrails (Llama Guard 3)
 
-Audit Logging (JSONL)
+● Audit Logging (JSONL)
 
-Policy Management (YAML)
+● Policy Management (YAML)
 
-Prompt Injection Detection
+● Prompt Injection Detection
 
-Monitoring Dashboard
+● Monitoring Dashboard
 
-Human-in-the-Loop Queue
+● Human-in-the-Loop Queue
 
 
