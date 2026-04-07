@@ -72,6 +72,93 @@ In production pipelines: clinical note processing, patient-facing chatbots, diag
 
 ## Demo (Game Changer — Run in 60 Seconds)
 
+## Getting Started
+
+Follow these steps to set up and run the Healthcare AI Compliance Framework locally in under 2 minutes.
+
+### Prerequisites
+
+- Python 3.10 or higher
+- Git
+- (Optional) Docker (for containerized deployment)
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/BehaBB/healthcare-ai-compliance-framework.git
+cd healthcare-ai-compliance-framework
+```
+### 2. Create Virtual Environment & Install Dependencies
+```bash
+# Create and activate virtual environment
+python -m venv venv
+source venv/bin/activate    # On Windows: venv\Scripts\activate
+# Install requirements
+pip install -r requirements.txt
+```
+**Note:** The framework uses Microsoft Presidio for PHI detection. Make sure the SpaCy model is downloaded:
+```bash
+python -m spacy download en_core_web_lg
+```
+### 3. Run the API Server
+```bash
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+### Prerequisites
+
+- Python 3.10 or higher
+- Git
+- (Optional) Docker (for containerized deployment)
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/BehaBB/healthcare-ai-compliance-framework.git
+cd healthcare-ai-compliance-framework
+```
+
+### 2. Create Virtual Environment & Install Dependencies
+```Bash
+# Create and activate virtual environment
+python -m venv venv
+source venv/bin/activate    # On Windows: venv\Scripts\activate
+```
+# Install requirements
+pip install -r requirements.txt
+Note: The framework uses Microsoft Presidio for PHI detection. Make sure the SpaCy model is downloaded:
+Bashpython -m spacy download en_core_web_lg
+
+### 3. Run the API Server
+```Bash
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+The server will start at: http://127.0.0.1:8000
+### 4. Open Interactive Docs
+
+Go to:
+
+● Swagger UI → http://127.0.0.1:8000/docs
+● ReDoc → http://127.0.0.1:8000/redoc
+
+### 5. Quick Health Check
+```Bash
+Bashcurl -X GET "http://127.0.0.1:8000/health"
+```
+**Expected response:**
+```JSON
+{
+  "status": "healthy",
+  "version": "0.1.0",
+  "compliance_engine": "ready"
+}
+```
+### 6. Test with Real Examples
+See the Demo section above for three ready-to-run curl commands:
+
+● Safe clinical note
+● PHI leakage (should BLOCK)
+● Borderline case (should REVIEW / redact)
+
 ### 1. Quick Start
 ```bash
 git clone https://github.com/BehaBB/healthcare-ai-compliance-framework.git
