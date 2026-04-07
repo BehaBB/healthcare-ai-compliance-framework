@@ -117,7 +117,9 @@ This isn’t just "another compliance checklist."
 It is a production-ready layer that enables:
 
 ● Engineers — to instantly integrate LLMs without risk
+
 ● Compliance teams — to generate automated audit trails
+
 ● Hospitals and startups — to bring AI to market faster and pass audits
 
 The Result:
@@ -126,10 +128,15 @@ You stay ahead of the competition.
 
 ### Key Features
 ● Compliance-by-design architecture
+
 ● HIPAA-aligned controls
+
 ● PHI detection & redaction (Microsoft Presidio)
+
 ● Real-time decision engine + risk scoring
+
 ● Full audit logging (thread-safe)
+
 ● Secure LLM pipeline examples
 ● FastAPI + OpenAPI docs
 
