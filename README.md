@@ -102,3 +102,37 @@ curl -X POST http://127.0.0.1:8000/process \
   -H "Content-Type: application/json" \
   -d '{"input_text": "The patient is a 45-year-old male with hypertension. Contact Dr. Smith at 555-0123 for follow-up."}'
 ```
+### Expected response:
+```json
+{
+  "input": "The patient is a 45-year-old male...",
+  "decision": "ALLOW_WITH_REDACTION",
+  "violations": ["potential phone number"],
+  "risk_score": 0.65,
+  "action": "redact PII before LLM"
+}
+```
+### Why It Matters
+This isn’t just "another compliance checklist."
+It is a production-ready layer that enables:
+
+● Engineers — to instantly integrate LLMs without risk
+● Compliance teams — to generate automated audit trails
+● Hospitals and startups — to bring AI to market faster and pass audits
+
+The Result:
+You no longer fear regulators.
+You stay ahead of the competition.
+
+### Key Features
+● Compliance-by-design architecture
+● HIPAA-aligned controls
+● PHI detection & redaction (Microsoft Presidio)
+● Real-time decision engine + risk scoring
+● Full audit logging (thread-safe)
+● Secure LLM pipeline examples
+● FastAPI + OpenAPI docs
+
+### Disclaimer
+This is a reference framework and prototype.
+It is not a medical device and does not replace legal or regulatory assessment.
