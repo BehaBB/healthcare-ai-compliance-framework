@@ -19,10 +19,9 @@ Healthcare organizations want to use LLMs (like GPT-4, Llama 3) to:
 
 **A production-ready compliance layer that sits BETWEEN your users and any LLM.**
 User Input → Compliance Engine → LLM → Compliance Engine → Response
+
 ↑ ↑
 └────────── Audit Log ───────────────┘
-
-text
 
 ### 🔥 Real Use Case: "Safe LLM for Clinical Notes"
 
