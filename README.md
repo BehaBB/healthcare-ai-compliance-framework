@@ -2,34 +2,37 @@
 
 **Compliance-by-Design for Safe LLM Operations in Healthcare**
 
-Embed HIPAA-compliant guardrails, PHI protection, and complete auditability directly into your architecture.  
-No leaks, no fines, no "what if regulators ask?" — only production-ready AI pipelines.
+Embed HIPAA-aligned guardrails, PHI protection, and full auditability directly into your AI pipelines.
+No leaks. No fines. No uncertainty during audits.
 
 ---
 
-## The Problem
+## ❗ The Problem
 
-In healthcare, **85% of AI projects fail** due to poor architecture and lack of real production use cases.
+In healthcare, **up to 85% of AI projects fail** due to poor architecture and lack of production readiness.
 
-The result:
-- PHI leaks → multi-million dollar fines
-- No auditability → loss of regulator trust
-- Post-hoc fixes → lost speed and money
+Common issues:
 
-You've already built a strong architecture.  
-Now the main thing is to **show how it works in a real clinical setting**.
+* PHI leaks → regulatory fines
+* No auditability → loss of trust
+* Compliance added too late → costly rework
+
+AI is not the problem.
+**Architecture and compliance are.**
 
 ---
 
-## The Solution
+## ✅ The Solution
 
-A lightweight, production-ready **compliance engine** that becomes a guardrail layer in front of any LLM or AI agent.
+A lightweight, production-ready **AI compliance engine** that acts as a guardrail layer between users and LLMs.
 
-### Main Use Case: Safe LLM for Clinical Notes
+### 🧩 Main Use Case: Safe LLM for Clinical Notes
 
-Doctor dictates notes → framework automatically filters PHI → LLM processes only safe text → output validation → complete audit.
+Doctor input → PHI detection → decision engine → safe LLM processing → output validation → audit logging
 
-**Pipeline:**
+---
+
+## 🏗 Pipeline
 
 ```mermaid
 graph LR
@@ -38,14 +41,17 @@ graph LR
     
     B --> C["Decision Engine\nPolicy + Risk Score"]
     
-    C -->|BLOCK| D["Reject / Redact\n+ Alert"]
+    C -->|BLOCK| D["Reject / Redact + Alert"]
     C -->|ALLOW| E["LLM Processing"]
     
     E --> F["Output Validation"]
     F --> G["Audit Log + Traceability"]
-    G --> H["Safe Output to EHR / Doctor"]
+    G --> H["Safe Output"]
 ```
-## API Response Example (BLOCK):
+
+---
+
+## ⚡ Example (Real Output)
 
 ```json
 {
@@ -56,180 +62,128 @@ graph LR
   "action": "redact or reject"
 }
 ```
-## Who Uses This
-AI Engineers in healthtech startups
 
-Compliance and Risk teams in hospitals
+---
 
-EHR system and clinical LLM agent developers
+## 👥 Who Uses This
 
-## Where It's Used
-In production pipelines: clinical note processing, patient-facing chatbots, diagnostic assistants, medical record summarization — anywhere PHI meets AI.
+* AI Engineers in healthtech startups
+* Compliance & Risk teams
+* EHR and clinical AI developers
 
-## Architecture
-<img src="./diagrams/system-high-level.png" alt="System Architecture"> *System Architecture — overall framework structure*<img src="./diagrams/decision-flow.png" alt="Decision Flow"> *Decision Flow — real-time decision making process*<img src="./diagrams/data-flow.png" alt="Data Flow"> *Data Flow — secure data movement*
-(All diagrams are already in the /diagrams/ folder and will be displayed automatically)
+---
 
-## Demo (Game Changer — Run in 60 Seconds)
+## 🏥 Where It's Used
 
-## Getting Started
+* Clinical note processing
+* Patient-facing chatbots
+* Diagnostic assistants
+* Medical record summarization
 
-Follow these steps to set up and run the Healthcare AI Compliance Framework locally in under 2 minutes.
+Anywhere **PHI meets AI**
 
-### Prerequisites
+---
 
-- Python 3.10 or higher
-- Git
-- (Optional) Docker (for containerized deployment)
+## 🧠 Architecture
 
-### 1. Clone the Repository
+![System Architecture](./diagrams/system-high-level.png)
+*High-level system design*
+
+![Decision Flow](./diagrams/decision-flow.png)
+*Real-time decision logic*
+
+![Data Flow](./diagrams/data-flow.png)
+*Secure data movement*
+
+---
+
+## 🚀 Quick Start (Run in ~60 seconds)
 
 ```bash
 git clone https://github.com/BehaBB/healthcare-ai-compliance-framework.git
 cd healthcare-ai-compliance-framework
-```
-### 2. Create Virtual Environment & Install Dependencies
-```bash
-# Create and activate virtual environment
+
 python -m venv venv
-source venv/bin/activate    # On Windows: venv\Scripts\activate
-# Install requirements
+source venv/bin/activate    # Windows: venv\Scripts\activate
+
 pip install -r requirements.txt
-```
-**Note:** The framework uses Microsoft Presidio for PHI detection. Make sure the SpaCy model is downloaded:
-```bash
 python -m spacy download en_core_web_lg
-```
-### 3. Run the API Server
-```bash
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
-### Prerequisites
 
-- Python 3.10 or higher
-- Git
-- (Optional) Docker (for containerized deployment)
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/BehaBB/healthcare-ai-compliance-framework.git
-cd healthcare-ai-compliance-framework
-```
-
-### 2. Create Virtual Environment & Install Dependencies
-```Bash
-# Create and activate virtual environment
-python -m venv venv
-source venv/bin/activate    # On Windows: venv\Scripts\activate
-```
-# Install requirements
-pip install -r requirements.txt
-Note: The framework uses Microsoft Presidio for PHI detection. Make sure the SpaCy model is downloaded:
-Bashpython -m spacy download en_core_web_lg
-
-### 3. Run the API Server
-```Bash
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
-The server will start at: http://127.0.0.1:8000
-### 4. Open Interactive Docs
-
-Go to:
-
-● Swagger UI → http://127.0.0.1:8000/docs
-
-● ReDoc → http://127.0.0.1:8000/redoc
-
-### 5. Quick Health Check
-```Bash
-Bashcurl -X GET "http://127.0.0.1:8000/health"
-```
-**Expected response:**
-```JSON
-{
-  "status": "healthy",
-  "version": "0.1.0",
-  "compliance_engine": "ready"
-}
-```
-### 6. Test with Real Examples
-See the Demo section above for three ready-to-run curl commands:
-
-● Safe clinical note
-
-● PHI leakage (should BLOCK)
-
-● Borderline case (should REVIEW / redact)
-
-### 1. Quick Start
-```bash
-git clone https://github.com/BehaBB/healthcare-ai-compliance-framework.git
-cd healthcare-ai-compliance-framework
-python -m venv venv && source venv/bin/activate
-pip install -r requirements.txt
 uvicorn tooling.api:app --reload
 ```
+
+Open API docs:
 http://127.0.0.1:8000/docs
 
-## Three Real Cases
+---
 
-### ✅ Safe Text
+## 🔬 Test Cases
+
+### ✅ Safe Input
+
 ```bash
 curl -X POST http://127.0.0.1:8000/process \
   -H "Content-Type: application/json" \
-  -d '{"input_text": "Patient reports mild headache and fatigue after vaccination."}'
+  -d '{"input_text": "Patient reports mild headache and fatigue."}'
 ```
-### ❌ PHI (Critical)
+
+---
+
+### ❌ PHI (Should BLOCK)
+
 ```bash
 curl -X POST http://127.0.0.1:8000/process \
   -H "Content-Type: application/json" \
   -d '{"input_text": "Patient SSN is 123-45-6789"}'
 ```
-###  ⚠️ Borderline Case
+
+---
+
+### ⚠️ Borderline Case
+
 ```bash
 curl -X POST http://127.0.0.1:8000/process \
   -H "Content-Type: application/json" \
-  -d '{"input_text": "The patient is a 45-year-old male with hypertension. Contact Dr. Smith at 555-0123 for follow-up."}'
+  -d '{"input_text": "Contact Dr. Smith at 555-0123"}'
 ```
-### Expected response:
+
+**Expected response:**
+
 ```json
 {
-  "input": "The patient is a 45-year-old male...",
   "decision": "ALLOW_WITH_REDACTION",
   "violations": ["potential phone number"],
   "risk_score": 0.65,
-  "action": "redact PII before LLM"
+  "action": "redact before LLM"
 }
 ```
-### Why It Matters
-This isn’t just "another compliance checklist."
-It is a production-ready layer that enables:
 
-● Engineers — to instantly integrate LLMs without risk
+---
 
-● Compliance teams — to generate automated audit trails
+## 🌍 Why It Matters
 
-● Hospitals and startups — to bring AI to market faster and pass audits
+This is not just a compliance checklist.
 
-### The Result:
-You no longer fear regulators.
-You stay ahead of the competition.
+It enables:
 
-### Key Features
-● Compliance-by-design architecture
+* **Engineers** → safely deploy LLMs
+* **Compliance teams** → get full audit trails
+* **Organizations** → ship faster without regulatory risk
 
-● HIPAA-aligned controls
+---
 
-● PHI detection & redaction (Microsoft Presidio)
+## ⚙️ Key Features
 
-● Real-time decision engine + risk scoring
+* Compliance-by-design architecture
+* PHI detection & redaction (Microsoft Presidio)
+* Policy-based decision engine
+* Risk scoring + explainability
+* Full audit logging
+* FastAPI + OpenAPI integration
 
-● Full audit logging (thread-safe)
+---
 
-● Secure LLM pipeline examples
-● FastAPI + OpenAPI docs
+## ⚠️ Disclaimer
 
-### Disclaimer
-This is a reference framework and prototype.
-It is not a medical device and does not replace legal or regulatory assessment.
+This project is a reference framework and prototype.
+It is not a medical device and does not replace legal or regulatory compliance review.
