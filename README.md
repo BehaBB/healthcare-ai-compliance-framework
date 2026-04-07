@@ -138,6 +138,7 @@ The server will start at: http://127.0.0.1:8000
 Go to:
 
 ● Swagger UI → http://127.0.0.1:8000/docs
+
 ● ReDoc → http://127.0.0.1:8000/redoc
 
 ### 5. Quick Health Check
@@ -156,7 +157,9 @@ Bashcurl -X GET "http://127.0.0.1:8000/health"
 See the Demo section above for three ready-to-run curl commands:
 
 ● Safe clinical note
+
 ● PHI leakage (should BLOCK)
+
 ● Borderline case (should REVIEW / redact)
 
 ### 1. Quick Start
