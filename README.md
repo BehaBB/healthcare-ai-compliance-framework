@@ -33,11 +33,15 @@ Doctor dictates notes → framework automatically filters PHI → LLM processes 
 
 ```mermaid
 graph LR
-    A[Doctor Input<br/>Clinical Notes] --> B[Compliance Filter<br/>PHI Detection (Presidio)]
-    B --> C[Decision Engine<br/>Policy + Risk Score]
-    C -->|BLOCK| D[Reject / Redact<br/>+ Alert]
-    C -->|ALLOW| E[LLM Processing]
-    E --> F[Output Validation]
-    F --> G[Audit Log + Traceability]
-    G --> H[Safe Output to EHR / Doctor]
+    A["Doctor Input\nClinical Notes"] 
+    --> B["Compliance Filter\nPHI Detection (Presidio)"]
+    
+    B --> C["Decision Engine\nPolicy + Risk Score"]
+    
+    C -->|BLOCK| D["Reject / Redact\n+ Alert"]
+    C -->|ALLOW| E["LLM Processing"]
+    
+    E --> F["Output Validation"]
+    F --> G["Audit Log + Traceability"]
+    G --> H["Safe Output to EHR / Doctor"]
 ```
