@@ -45,3 +45,27 @@ graph LR
     F --> G["Audit Log + Traceability"]
     G --> H["Safe Output to EHR / Doctor"]
 ```
+## API Response Example (BLOCK):
+
+```json
+{
+  "input": "Patient SSN is 123-45-6789",
+  "decision": "BLOCK",
+  "violations": ["SSN detected"],
+  "risk_score": 0.94,
+  "action": "redact or reject"
+}
+```
+## Who Uses This
+AI Engineers in healthtech startups
+
+Compliance and Risk teams in hospitals
+
+EHR system and clinical LLM agent developers
+
+## Where It's Used
+In production pipelines: clinical note processing, patient-facing chatbots, diagnostic assistants, medical record summarization — anywhere PHI meets AI.
+
+## Architecture
+<img src="./diagrams/system-high-level.png" alt="System Architecture"> *System Architecture — overall framework structure*<img src="./diagrams/decision-flow.png" alt="Decision Flow"> *Decision Flow — real-time decision making process*<img src="./diagrams/data-flow.png" alt="Data Flow"> *Data Flow — secure data movement*
+(All diagrams are already in the /diagrams/ folder and will be displayed automatically)
