@@ -176,13 +176,13 @@ http://127.0.0.1:8000/docs
 
 ### ✅ Safe Text
 ```bash
-Bashcurl -X POST http://127.0.0.1:8000/process \
+curl -X POST http://127.0.0.1:8000/process \
   -H "Content-Type: application/json" \
   -d '{"input_text": "Patient reports mild headache and fatigue after vaccination."}'
 ```
 ### ❌ PHI (Critical)
 ```bash
-Bashcurl -X POST http://127.0.0.1:8000/process \
+curl -X POST http://127.0.0.1:8000/process \
   -H "Content-Type: application/json" \
   -d '{"input_text": "Patient SSN is 123-45-6789"}'
 ```
@@ -212,7 +212,7 @@ It is a production-ready layer that enables:
 
 ● Hospitals and startups — to bring AI to market faster and pass audits
 
-The Result:
+### The Result:
 You no longer fear regulators.
 You stay ahead of the competition.
 
