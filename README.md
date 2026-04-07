@@ -69,3 +69,15 @@ In production pipelines: clinical note processing, patient-facing chatbots, diag
 ## Architecture
 <img src="./diagrams/system-high-level.png" alt="System Architecture"> *System Architecture — overall framework structure*<img src="./diagrams/decision-flow.png" alt="Decision Flow"> *Decision Flow — real-time decision making process*<img src="./diagrams/data-flow.png" alt="Data Flow"> *Data Flow — secure data movement*
 (All diagrams are already in the /diagrams/ folder and will be displayed automatically)
+
+## Demo (Game Changer — Run in 60 Seconds)
+
+### 1. Quick Start
+```bash
+git clone https://github.com/BehaBB/healthcare-ai-compliance-framework.git
+cd healthcare-ai-compliance-framework
+python -m venv venv && source venv/bin/activate
+pip install -r requirements.txt
+uvicorn tooling.api:app --reload
+```
+http://127.0.0.1:8000/docs
