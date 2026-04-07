@@ -125,16 +125,16 @@ curl -X POST http://127.0.0.1:8000/process \
   -H "Content-Type: application/json" \
   -d '{"input_text": "Patient SSN is 123-45-6789"}'
 ```
+
 ## 📋 Compliance Mapping
-Requirement	      Implementation	    Status
 
-PHI Protection	   Presidio detection	✅
+| Requirement    | Implementation      | Status |
+|-------------   |----------------     |--------|
+| PHI Protection | Presidio detection  | ✅ |
+| Audit Logging  | Trace_id +  logs    | ✅ |
+| Risk Scoring   | Decision engine     | ✅ |
+| Human Review   | Policy rules        | ✅ |
 
-Audit Logging	   trace_id + logs  	✅
-
-Risk Scoring	    decision engine 	✅
-
-Human Review	    policy rules	    ✅
 ## ⚠️ Disclaimer
 
 This is a reference framework and prototype.
@@ -142,8 +142,12 @@ Not a certified medical device.
 Always perform regulatory and clinical validation before production use.
 
 ## 🛣 Roadmap
-Human-in-the-loop workflows
-Observability (OpenTelemetry)
-EU AI Act support
-Adversarial testing
-Bias monitoring
+● Human-in-the-loop workflows
+
+● Observability (OpenTelemetry)
+
+● EU AI Act support
+
+● Adversarial testing
+
+● Bias monitoring
