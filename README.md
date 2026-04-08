@@ -141,12 +141,7 @@ curl -X POST http://127.0.0.1:8000/process \
   -d '{"input_text": "The patient is a 45-year-old male with hypertension. Contact Dr. Smith at 555-0123 for follow-up."}'
 ```
 ### 📋 Compliance Mapping (HIPAA-aligned)
-HIPAA Security Rule,Implementation,Status
-Access Control,PHI redaction + policy enforcement,✅
-Audit Controls,Immutable logs with trace_id + OpenTelemetry,✅
-Integrity,Multi-layer input/output validation,✅
-PHI De-identification,Microsoft Presidio Analyzer & Anonymizer,✅
-Transmission Security,Redaction before LLM + secure audit export,In Progress
+
 | HIPAA Security Rule          | Implementation                                           | Status |
 |--------------------         -|----------------                                          |--------|
 | **Access Control**           | PHI redaction + policy enforcement (RBAC-ready)          | ✅ |
