@@ -143,7 +143,7 @@ curl -X POST http://127.0.0.1:8000/process \
 ### 📋 Compliance Mapping (HIPAA-aligned)
 
 | HIPAA Security Rule          | Implementation                                           | Status |
-|--------------------         -|----------------                                          |--------|
+|--------------------          |----------------                                          |--------|
 | **Access Control**           | PHI redaction + policy enforcement (RBAC-ready)          | ✅ |
 | **Audit Controls**           | Immutable logs with trace_id + OpenTelemetry integration | ✅ |
 | **Integrity**                | Multi-layer input/output validation + decision trace     | ✅ |
