@@ -1,6 +1,6 @@
 # Healthcare AI Guardrails Framework
 
-**Production-ready compliance layer for safe LLM deployment in regulated healthcare**
+**Production-ready compliance layer for safe and compliant LLM deployment in healthcare**
 
 Embed HIPAA-aligned guardrails, PHI protection, risk-based decisioning, and immutable audit trails directly into your AI pipelines.
 
@@ -10,144 +10,180 @@ Embed HIPAA-aligned guardrails, PHI protection, risk-based decisioning, and immu
 
 ## ❗ The Problem
 
-Healthcare AI projects fail at alarming rates — not because of the models, but due to missing **compliance-by-design** architecture.
+Healthcare AI projects continue to fail at high rates — not because of model performance, but due to missing **compliance-by-design** architecture and inadequate guardrails.
 
 Common failure points:
-- Uncontrolled PHI exposure → regulatory fines  
-- Lack of audit trails during reviews  
-- Compliance added too late → expensive rework  
-- Unsafe medical recommendations  
-- No protection against prompt injection / jailbreaks  
+- Uncontrolled PHI exposure leading to regulatory fines
+- Lack of audit trails for compliance reviews
+- Unsafe or inaccurate medical recommendations
+- Vulnerability to prompt injection and jailbreak attacks
+- Compliance added as an afterthought → expensive rework
 
-**AI is powerful. Without guardrails, it becomes a liability.**
+**Powerful AI in healthcare without strong guardrails becomes a serious liability.**
 
 ---
 
 ## ✅ The Solution
 
-**Healthcare AI Guardrails Framework** — a lightweight, policy-driven compliance engine that sits between users and LLMs.
+**Healthcare AI Guardrails Framework** is a lightweight, modular, policy-driven compliance engine that acts as a secure middleware layer between users and any LLM.
 
-It provides:
-- Real-time PHI detection & redaction (Microsoft Presidio)  
-- Configurable policy engine (YAML + hot reload)  
-- Risk scoring aligned with HIPAA/FDA expectations  
-- Multi-layer safety guardrails  
-- Immutable audit logging with traceability  
+It combines best-in-class tools available in 2026:
+- **Microsoft Presidio** — for accurate PHI detection and redaction
+- **Llama Guard 3** (Meta) — for input/output safety classification based on MLCommons hazards taxonomy
+- **NVIDIA NeMo Guardrails** — for advanced conversational control, topic guidance, jailbreak prevention, and domain-specific medical policies
 
----
+### Main Use Case: Safe LLM for Clinical Notes
 
-## 🏗 Compliance Pipeline
+Doctor input → PHI detection & redaction → multi-layer safety & compliance checks → LLM processing (only on safe text) → output validation → structured audit log.
+
+**Enhanced Compliance Pipeline:**
 
 ```mermaid
-graph TD
-    A[Doctor / User Input] 
-    --> B[PHI Detection & Redaction]
+graph LR
+    A["Doctor Input\nClinical Notes"] 
+    --> B["PHI Detection & Redaction\n(Microsoft Presidio)"]
     
-    B --> C[Policy Engine]
+    B --> C["Safety Classification\n(Llama Guard 3)"]
     
-    C --> D{Decision}
-    D -->|BLOCK| E[Reject + Alert]
-    D -->|REDACT| F[Redact + Continue]
-    D -->|ALLOW| G[LLM Processing]
+    C --> D["Policy & Conversational Guardrails\n(NVIDIA NeMo Guardrails)"]
     
-    G --> H[Output Validation]
-    H --> I[Audit Log]
-    I --> J[Safe Output]
+    D --> E["Decision Engine\n(Policy + Risk Score)"]
+    
+    E -->|BLOCK| F["Reject / Redact\n+ Alert"]
+    E -->|ALLOW| G["LLM Processing"]
 ```
-## ⚡ Real Example
-**❌ Unsafe Input**
-```json
+   **Example Response (BLOCK case)**
+```JSON
 {
-  "input_text": "Patient Natalia Smith, born 15.05.1985, SSN 123-45-6789. Recommend metformin dosage."
-}
-```
-**Response**
-```json
-{
+  "input": "Patient SSN is 123-45-6789",
   "decision": "BLOCK",
-  "risk_score": 0.92,
-  "violations": ["PHI detected", "medical advice risk"],
-  "action_taken": "rejected",
-  "requires_human_review": true
+  "violations": ["SSN detected", "unsafe_content"],
+  "risk_score": 0.94,
+  "guardrails_triggered": ["presidio_phi", "llama_guard3"],
+  "action": "redact or reject"
 }
 ```
-## ✅ Safe Input
-```json
-{
-  "input_text": "Patient reports mild headache and fatigue."
-}
-```
-Response → **processed safely with LLM**
+### 👥 Who Uses This
 
-## 👥 Who Uses This
-Healthtech AI engineers
-Compliance & Risk teams
-EHR / clinical system developers
-## 🏥 Use Cases
-Clinical documentation assistants
-Patient chatbots
-Medical summarization pipelines
-Decision support systems
-## 🧠 Key Features
-Compliance-by-design architecture
-PHI detection & redaction
-Policy-based decision engine
-Risk scoring + explainability
-Medical safety controls
-Full audit logging (trace_id, policy hash)
-FastAPI + OpenAPI integration
-## 🚀 Quick Start
+● Healthtech AI Engineers building clinical applications
+
+● Compliance & Risk teams in hospitals and payers
+
+● Developers of EHR-integrated AI assistants
+
+● Teams creating diagnostic support or medical summarization tools
+
+### 🏥 Where It Is Used
+Clinical documentation assistants, patient chatbots, medical record summarization, diagnostic decision support — anywhere protected health information (PHI) meets generative AI.
+
+### 🧠 Key Features
+
+PHI Protection: Microsoft Presidio Analyzer + Anonymizer with healthcare-specific recognizers
+
+Safety Guardrails: Llama Guard 3 for harm detection (MLCommons taxonomy)
+
+Conversational Control: NVIDIA NeMo Guardrails for medical policies, topic control, and jailbreak resistance
+
+Risk-based Decisioning: Configurable risk scoring and policy engine
+
+Immutable Auditing: Structured logging with trace_id and OpenTelemetry support
+
+Modular Architecture: Easy to extend with custom policies and additional guardrails
+
+FastAPI + OpenAPI: Interactive documentation and easy integration
+
+
+### 🚀 Getting Started
+**Prerequisites**
+
+● Python 3.10 or higher
+
+● Git
+
+**Installation & Run**
 ```bash
-git clone https://github.com/BehaBB/healthcare-ai-compliance-framework.git
+Bashgit clone https://github.com/BehaBB/healthcare-ai-compliance-framework.git
 cd healthcare-ai-compliance-framework
 
 python -m venv venv
-source venv/bin/activate
+source venv/bin/activate          # On Windows: venv\Scripts\activate
 
 pip install -r requirements.txt
+
+# Download required models
 python -m spacy download en_core_web_lg
 
-uvicorn tooling.api:app --reload
+uvicorn tooling.api:app --reload --host 0.0.0.0 --port 8000
 ```
-Open docs:
+Open interactive API documentation:
 http://127.0.0.1:8000/docs
 
-## 🔬 Test API
-**Safe**
+### Quick Health Check
+Bashcurl -X GET "http://127.0.0.1:8000/health"
+
+### 🔬 Demo: Test Three Cases
+**1. Safe Text**
 ```bash
 curl -X POST http://127.0.0.1:8000/process \
   -H "Content-Type: application/json" \
-  -d '{"input_text": "Patient reports mild headache."}'
+  -d '{"input_text": "Patient reports mild headache and fatigue after vaccination."}'
 ```
-**Should BLOCK**
+**2. PHI (Should BLOCK)**
 ```bash
 curl -X POST http://127.0.0.1:8000/process \
   -H "Content-Type: application/json" \
   -d '{"input_text": "Patient SSN is 123-45-6789"}'
 ```
+**3. Borderline / Potential Unsafe Case**
+```bash
+curl -X POST http://127.0.0.1:8000/process \
+  -H "Content-Type: application/json" \
+  -d '{"input_text": "The patient is a 45-year-old male with hypertension. Contact Dr. Smith at 555-0123 for follow-up."}'
+```
+### 📋 Compliance Mapping (HIPAA-aligned)
 
-## 📋 Compliance Mapping
 
-| Requirement    | Implementation      | Status |
-|-------------   |----------------     |--------|
-| PHI Protection | Presidio detection  | ✅ |
-| Audit Logging  | Trace_id +  logs    | ✅ |
-| Risk Scoring   | Decision engine     | ✅ |
-| Human Review   | Policy rules        | ✅ |
 
-## ⚠️ Disclaimer
 
-This is a reference framework and prototype.
-Not a certified medical device.
-Always perform regulatory and clinical validation before production use.
 
-## 🛣 Roadmap
-● Human-in-the-loop workflows
 
-● Observability (OpenTelemetry)
 
-● EU AI Act support
 
-● Adversarial testing
 
-● Bias monitoring
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+HIPAA Security RuleImplementationStatusAccess ControlPHI redaction + policy enforcement✅Audit ControlsImmutable logs with trace_id + OpenTelemetry✅IntegrityMulti-layer input/output validation✅PHI De-identificationMicrosoft Presidio Analyzer & Anonymizer✅Transmission SecurityRedaction before LLM + secure audit exportIn Progress
+
+### ⚠️ Disclaimer
+This is a reference framework and prototype for research and development purposes.
+It is not a certified medical device or substitute for professional regulatory, legal, or clinical validation.
+Always perform your own compliance assessment before production use.
+
+License: MIT
+    G --> H["Output Validation"]
+    H --> I["Structured Audit Log\n+ Traceability"]
+    I --> J["Safe Output to EHR / Doctor"]
