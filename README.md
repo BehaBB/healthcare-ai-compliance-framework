@@ -141,49 +141,26 @@ curl -X POST http://127.0.0.1:8000/process \
   -d '{"input_text": "The patient is a 45-year-old male with hypertension. Contact Dr. Smith at 555-0123 for follow-up."}'
 ```
 ### 📋 Compliance Mapping (HIPAA-aligned)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-HIPAA Security RuleImplementationStatusAccess ControlPHI redaction + policy enforcement✅Audit ControlsImmutable logs with trace_id + OpenTelemetry✅IntegrityMulti-layer input/output validation✅PHI De-identificationMicrosoft Presidio Analyzer & Anonymizer✅Transmission SecurityRedaction before LLM + secure audit exportIn Progress
+HIPAA Security Rule,Implementation,Status
+Access Control,PHI redaction + policy enforcement,✅
+Audit Controls,Immutable logs with trace_id + OpenTelemetry,✅
+Integrity,Multi-layer input/output validation,✅
+PHI De-identification,Microsoft Presidio Analyzer & Anonymizer,✅
+Transmission Security,Redaction before LLM + secure audit export,In Progress
+| HIPAA Security Rule          | Implementation                                           | Status |
+|--------------------         -|----------------                                          |--------|
+| **Access Control**           | PHI redaction + policy enforcement (RBAC-ready)          | ✅ |
+| **Audit Controls**           | Immutable logs with trace_id + OpenTelemetry integration | ✅ |
+| **Integrity**                | Multi-layer input/output validation + decision trace     | ✅ |
+| **PHI De-identification**    | Microsoft Presidio Analyzer & Anonymizer                 | ✅ |
+| **Transmission Security**    | Redaction before LLM + secure audit export               | 🚧 In Progress |
 
 ### ⚠️ Disclaimer
 This is a reference framework and prototype for research and development purposes.
+
 It is not a certified medical device or substitute for professional regulatory, legal, or clinical validation.
+
 Always perform your own compliance assessment before production use.
 
 License: MIT
-    G --> H["Output Validation"]
-    H --> I["Structured Audit Log\n+ Traceability"]
-    I --> J["Safe Output to EHR / Doctor"]
+    
